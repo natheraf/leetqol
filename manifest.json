@@ -1,0 +1,20 @@
+{
+  "name": "LeetQOL",
+  "description": "Leetcode Quality of Life stuff",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "logo.png"
+  },
+  "permissions": ["tabs"],
+  "background": {
+    "service_worker": "scripts/background.js"
+  },
+  "content_scripts": [
+    {
+      "js": ["scripts/selectors.config.js", "scripts/content.js"],
+      "matches": ["https://leetcode.com/*"]
+    }
+  ]
+}
