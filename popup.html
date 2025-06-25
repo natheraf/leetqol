@@ -1,8 +1,45 @@
-<html>
-  <body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>LeetQoL</title>
     <script src="scripts/popup.js"></script>
-    <div style="width: 250px">
-      <h2>LeetQoL</h2>
+    <link rel="stylesheet" href="styles/popup.css" />
+  </head>
+  <body>
+    <div style="width: 250px; display: flex; flex-direction: column">
+      <div class="header">
+        <h1>LeetQoL</h1>
+        <button
+          style="
+            border-radius: 100%;
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: none;
+            cursor: pointer;
+          "
+        >
+          <img
+            src="public/power.svg"
+            alt="power"
+            height="25"
+            width="25"
+            style="margin-left: -5px"
+          />
+        </button>
+      </div>
+      <h1>Timer length</h1>
+      <div class="timer-line">
+        <h2>Easy</h2>
+        <div class="timer-input-group">
+          <input class="timer-input" type="text" />
+          <h4>Hr</h4>
+        </div>
+        <div class="timer-input-group">
+          <input class="timer-input" type="text" />
+          <h4>Min</h4>
+        </div>
+      </div>
     </div>
   </body>
 </html>
