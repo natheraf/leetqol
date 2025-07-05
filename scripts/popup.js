@@ -46,6 +46,50 @@ const getPower = () =>
     })
   );
 
+let showSolvedInPrompt = false;
+const getShowSolvedInPrompt = () =>
+  new Promise((resolve, _reject) =>
+    chrome.storage.local.get("showSolvedInPrompt").then((res) => {
+      res = res.showSolvedInPrompt;
+      if (res === undefined) {
+        res = false;
+      }
+      showSolvedInPrompt = res;
+      chrome.storage.local.set({ showSolvedInPrompt }).then(resolve);
+    })
+  );
+
+const showSolvedInPromptOnChange = (event) =>
+  new Promise((resolve, _reject) => {
+    const checked = event.target.checked;
+    showSolvedInPrompt = checked;
+    chrome.storage.local.set({ showSolvedInPrompt }).then(resolve);
+  });
+
+let hideProblemIsSolved = false;
+const getHideProblemIsSolved = () =>
+  new Promise((resolve, _reject) =>
+    chrome.storage.local.get("hideProblemIsSolved").then((res) => {
+      res = res.hideProblemIsSolved;
+      if (res === undefined) {
+        res = false;
+      }
+      hideProblemIsSolved = res;
+      chrome.storage.local.set({ hideProblemIsSolved }).then(resolve);
+    })
+  );
+
+const hideProblemIsSolvedOnChange = (event) =>
+  new Promise((resolve, _reject) => {
+    const checked = event.target.checked;
+    hideProblemIsSolved = checked;
+    const showSolvedInPromptCheckbox = document.getElementById(
+      "show-solved-in-prompt-checkbox"
+    );
+    showSolvedInPromptCheckbox.disabled = hideProblemIsSolved;
+    chrome.storage.local.set({ hideProblemIsSolved }).then(resolve);
+  });
+
 let autoResetType = "prompt";
 const getAutoResetType = () =>
   new Promise((resolve, _reject) =>
@@ -63,7 +107,7 @@ const getAutoResetType = () =>
     })
   );
 
-const autoResetTypeCheckboxOnChange = (event) =>
+const autoResetTypeRadioOnChange = (event) =>
   new Promise((resolve, _reject) => {
     const type = event.target.id.split("-")[1];
     autoResetType = type;
@@ -72,7 +116,12 @@ const autoResetTypeCheckboxOnChange = (event) =>
 
 const loadAllLocalData = () =>
   new Promise((resolve, reject) => {
-    Promise.all([getPower(), getAutoResetType()]).then(resolve);
+    Promise.all([
+      getPower(),
+      getAutoResetType(),
+      getShowSolvedInPrompt(),
+      getHideProblemIsSolved(),
+    ]).then(resolve);
   });
 
 const togglePower = () => {
@@ -106,6 +155,7 @@ const documentOnLoad = () => {
       });
     });
   });
+
   document
     .getElementById("power-toggle-btn")
     .addEventListener("click", togglePower);
@@ -114,12 +164,31 @@ const documentOnLoad = () => {
     document.getElementById("power-off").style.display = "unset";
   }
   ["prompt", "code", "stopwatch", "timer"].forEach((type) => {
-    const checkboxElement = document.getElementById(`reset-${type}-radio`);
+    const radioElement = document.getElementById(`reset-${type}-radio`);
     if (autoResetType === type) {
-      checkboxElement.checked = true;
+      radioElement.checked = true;
     }
-    checkboxElement.addEventListener("change", autoResetTypeCheckboxOnChange);
+    radioElement.addEventListener("change", autoResetTypeRadioOnChange);
   });
+
+  const showSolvedInPromptCheckbox = document.getElementById(
+    "show-solved-in-prompt-checkbox"
+  );
+  showSolvedInPromptCheckbox.checked = showSolvedInPrompt;
+  showSolvedInPromptCheckbox.disabled = hideProblemIsSolved;
+  showSolvedInPromptCheckbox.addEventListener(
+    "change",
+    showSolvedInPromptOnChange
+  );
+
+  const hideProblemIsSolvedCheckbox = document.getElementById(
+    "hide-solved-status-checkbox"
+  );
+  hideProblemIsSolvedCheckbox.checked = hideProblemIsSolved;
+  hideProblemIsSolvedCheckbox.addEventListener(
+    "change",
+    hideProblemIsSolvedOnChange
+  );
 };
 
 document.addEventListener(

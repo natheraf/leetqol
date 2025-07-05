@@ -119,7 +119,6 @@ const getPower = () =>
         res = true;
       }
       power = res;
-      console.log(power);
       chrome.storage.local
         .set({
           power,
@@ -145,9 +144,40 @@ const getAutoResetType = () =>
     })
   );
 
+let showSolvedInPrompt = false;
+const getShowSolvedInPrompt = () =>
+  new Promise((resolve, _reject) =>
+    chrome.storage.local.get("showSolvedInPrompt").then((res) => {
+      res = res.showSolvedInPrompt;
+      if (res === undefined) {
+        res = false;
+      }
+      showSolvedInPrompt = res;
+      chrome.storage.local.set({ showSolvedInPrompt }).then(resolve);
+    })
+  );
+
+let hideProblemIsSolved = false;
+const getHideProblemIsSolved = () =>
+  new Promise((resolve, _reject) =>
+    chrome.storage.local.get("hideProblemIsSolved").then((res) => {
+      res = res.hideProblemIsSolved;
+      if (res === undefined) {
+        res = false;
+      }
+      hideProblemIsSolved = res;
+      chrome.storage.local.set({ hideProblemIsSolved }).then(resolve);
+    })
+  );
+
 const loadAllLocalData = () =>
   new Promise((resolve, reject) => {
-    Promise.all([getPower(), getAutoResetType()]).then(resolve);
+    Promise.all([
+      getPower(),
+      getAutoResetType(),
+      getShowSolvedInPrompt(),
+      getHideProblemIsSolved(),
+    ]).then(resolve);
   });
 
 const main = () => {
@@ -204,8 +234,37 @@ const main = () => {
   const editResetCodePopup = (backdrop) =>
     new Promise((resolve, reject) => {
       backdrop.style.backgroundColor = "black";
-      document.querySelector(codeResetPopupSelectors.heading).innerHTML =
-        "Reset code and clock?";
+      const headingElement = document.querySelector(
+        codeResetPopupSelectors.heading
+      );
+      headingElement.innerHTML = "Reset code and clock?";
+
+      if (showSolvedInPrompt) {
+        const solvedStatusElement = document
+          .querySelector(solvedStatus)
+          ?.cloneNode(true);
+        const textDiv = headingElement.parentElement;
+        const isSolvedDiv = document.createElement("div");
+        textDiv.prepend(isSolvedDiv);
+        const isSolvedText = document.createElement("div");
+        isSolvedDiv.append(isSolvedText);
+        isSolvedDiv.style.display = "flex";
+        isSolvedDiv.style.flexDirection = "row";
+        isSolvedDiv.style.gap = ".5rem";
+        isSolvedText.setAttribute(
+          "class",
+          "text-label-2 dark:text-dark-label-2 mt-2"
+        );
+        isSolvedText.innerHTML = `This problem is ${
+          solvedStatusElement ? "" : "not solved ❌"
+        }`;
+        if (solvedStatusElement) {
+          solvedStatusElement.id = null;
+          solvedStatusElement.style.paddingTop = "9px";
+          isSolvedDiv.append(solvedStatusElement);
+        }
+      }
+
       const confirmButton = document.querySelector(
         codeResetPopupSelectors.confirmButton
       );

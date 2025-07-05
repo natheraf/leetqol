@@ -93,7 +93,7 @@
         </div>
         <div>
           <h1>Auto Reset</h1>
-          <div style="display: flex; flex-direction: column">
+          <div style="display: flex; flex-direction: column; font-size: 1rem">
             <div>
               <input
                 type="radio"
@@ -130,6 +130,31 @@
               />
               <label for="reset-timer-radio">Code and timer</label>
             </div>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; font-size: 1rem">
+          <h2>Other Options</h2>
+          <div>
+            <input
+              type="checkbox"
+              id="show-solved-in-prompt-checkbox"
+              name="show-solved"
+              value="show-solved"
+            />
+            <label for="show-solved-in-prompt-checkbox"
+              >Show if problem is solved in prompt</label
+            >
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="hide-solved-status-checkbox"
+              name="hide-solved"
+              value="hide-solved"
+            />
+            <label for="hide-solved-status-checkbox"
+              >Hide all indication problem was solved</label
+            >
           </div>
         </div>
       </div>
