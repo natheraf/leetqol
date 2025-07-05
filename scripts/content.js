@@ -68,22 +68,33 @@ function changeValue(input, value) {
   input.dispatchEvent(inputEvent);
 }
 
-const timerAmount = { easy: 10, medium: 15, hard: 20 };
 const handleSelectTimer = () => {
   waitForElm(clockPopupSelectors.timer).then((el) => {
     el.click();
-    changeValue(
-      document.querySelector(clockPopupSelectors.timerHourInput),
-      "00"
-    );
-    const difficultyValue = document
-      .querySelector(difficultyChip)
-      .textContent.toLowerCase();
-    changeValue(
-      document.querySelector(clockPopupSelectors.timerMinuteInput),
-      timerAmount[difficultyValue].toString()
-    );
-    handleClickBottomButton();
+    chrome.storage.local.get("timer").then((res) => {
+      res = res.timer;
+      if (!res || Object.keys(res).length === 0) {
+        chrome.storage.local.set({
+          timer: { easy: 10, medium: 15, hard: 20 },
+        });
+        res = { easy: 10, medium: 15, hard: 20 };
+      }
+      const difficultyValue = document
+        .querySelector(difficultyChip)
+        .textContent.toLowerCase();
+      const timerValue = res[difficultyValue];
+      const hrValue = Math.floor(parseInt(timerValue) / 60);
+      const minValue = parseInt(timerValue) % 60;
+      changeValue(
+        document.querySelector(clockPopupSelectors.timerHourInput),
+        hrValue.toString()
+      );
+      changeValue(
+        document.querySelector(clockPopupSelectors.timerMinuteInput),
+        minValue.toString()
+      );
+      handleClickBottomButton();
+    });
   });
 };
 
@@ -150,88 +161,109 @@ const main = () => {
     clearClickListeners();
   };
 
-  const editResetCodePopup = (backdrop) => {
-    backdrop.style.backgroundColor = "black";
-    document.querySelector(codeResetPopupSelectors.heading).innerHTML =
-      "Reset code and clock?";
-    const confirmButton = document.querySelector(
-      codeResetPopupSelectors.confirmButton
-    );
-    confirmButton.parentElement.style.display = "none";
-    const buttonContainer = confirmButton.parentElement.parentElement;
+  const editResetCodePopup = (backdrop) =>
+    new Promise((resolve, reject) => {
+      backdrop.style.backgroundColor = "black";
+      document.querySelector(codeResetPopupSelectors.heading).innerHTML =
+        "Reset code and clock?";
+      const confirmButton = document.querySelector(
+        codeResetPopupSelectors.confirmButton
+      );
+      confirmButton.parentElement.style.display = "none";
+      const buttonContainer = confirmButton.parentElement.parentElement;
 
-    const stopwatchButtonDiv = document.createElement("div");
-    stopwatchButtonDiv.style.margin = "8px";
+      const stopwatchButtonDiv = document.createElement("div");
+      stopwatchButtonDiv.style.margin = "8px";
 
-    const stopwatchButton = document.createElement("button");
-    stopwatchButtonDiv.append(stopwatchButton);
-    stopwatchButton.setAttribute(
-      "class",
-      "px-3 py-1.5 font-medium items-center whitespace-nowrap focus:outline-none inline-flex text-label-r bg-blue-1 dark:bg-blue-1 hover:bg-blue-10 dark:hover:bg-blue-10 rounded-lg"
-    );
-    stopwatchButton.innerHTML = "Reset Stopwatch Too";
-    stopwatchButton.id = "confirm-and-stopwatch-button";
-    buttonContainer.append(stopwatchButtonDiv);
+      const stopwatchButton = document.createElement("button");
+      stopwatchButtonDiv.append(stopwatchButton);
+      stopwatchButton.setAttribute(
+        "class",
+        "px-3 py-1.5 font-medium items-center whitespace-nowrap focus:outline-none inline-flex text-label-r bg-blue-1 dark:bg-blue-1 hover:bg-blue-10 dark:hover:bg-blue-10 rounded-lg"
+      );
+      stopwatchButton.innerHTML = "Reset Stopwatch Too";
+      stopwatchButton.id = "confirm-and-stopwatch-button";
+      buttonContainer.append(stopwatchButtonDiv);
 
-    const resetCodeOnlyButtonDiv = document.createElement("div");
-    resetCodeOnlyButtonDiv.style.margin = "8px";
+      const resetCodeOnlyButtonDiv = document.createElement("div");
+      resetCodeOnlyButtonDiv.style.margin = "8px";
 
-    const resetCodeOnlyButton = document.createElement("button");
-    resetCodeOnlyButtonDiv.append(resetCodeOnlyButton);
-    resetCodeOnlyButton.setAttribute(
-      "class",
-      "px-3 py-1.5 font-medium items-center whitespace-nowrap focus:outline-none inline-flex text-label-r bg-green-s dark:bg-dark-green-s hover:bg-green-3 dark:hover:bg-dark-green-3 rounded-lg"
-    );
-    resetCodeOnlyButton.innerHTML = "Reset Code Only";
-    resetCodeOnlyButton.id = "confirm-and-reset-code-button";
-    buttonContainer.append(resetCodeOnlyButtonDiv);
+      const resetCodeOnlyButton = document.createElement("button");
+      resetCodeOnlyButtonDiv.append(resetCodeOnlyButton);
+      resetCodeOnlyButton.setAttribute(
+        "class",
+        "px-3 py-1.5 font-medium items-center whitespace-nowrap focus:outline-none inline-flex text-label-r bg-green-s dark:bg-dark-green-s hover:bg-green-3 dark:hover:bg-dark-green-3 rounded-lg"
+      );
+      resetCodeOnlyButton.innerHTML = "Reset Code Only";
+      resetCodeOnlyButton.id = "confirm-and-reset-code-button";
+      buttonContainer.append(resetCodeOnlyButtonDiv);
 
-    const resetPopupContainer =
-      confirmButton.parentElement.parentElement.parentElement.parentElement
-        .parentElement;
+      const resetPopupContainer =
+        confirmButton.parentElement.parentElement.parentElement.parentElement
+          .parentElement;
 
-    const difficultyValue = document
-      .querySelector(difficultyChip)
-      .textContent.toLowerCase();
-    const difficultyElement = document.querySelector(difficultyChip).outerHTML;
-    const timerDescription = document.createElement("p");
-    timerDescription.style.marginTop = "16px";
-    timerDescription.style.justifySelf = "end";
-    timerDescription.innerHTML = `${timerAmount[
-      difficultyValue
-    ].toString()} minutes set for ${difficultyElement}`;
-    resetPopupContainer.append(timerDescription);
+      const difficultyValue = document
+        .querySelector(difficultyChip)
+        .textContent.toLowerCase();
+      const difficultyElement =
+        document.querySelector(difficultyChip).outerHTML;
+      const timerDescription = document.createElement("p");
+      timerDescription.style.marginTop = "16px";
+      timerDescription.style.justifySelf = "end";
+      chrome.storage.local.get("timer").then((res) => {
+        res = res.timer;
+        if (!res || Object.keys(res).length === 0) {
+          chrome.storage.local.set({
+            timer: { easy: 10, medium: 15, hard: 20 },
+          });
+          res = { easy: 10, medium: 15, hard: 20 };
+        }
+        const timerValue = res[difficultyValue];
+        const hrValue = Math.floor(parseInt(timerValue) / 60);
+        const minValue = parseInt(timerValue) % 60;
+        const hourWord = hrValue === 1 ? "hour" : "hours";
+        timerDescription.innerHTML =
+          hrValue === 0 ? "" : `${hrValue} ${hourWord} and `;
+        timerDescription.innerHTML += `${minValue} minutes set for ${difficultyElement}`;
+        resetPopupContainer.append(timerDescription);
 
-    const timerButtonDiv = document.createElement("div");
-    timerButtonDiv.style.marginTop = "8px";
-    timerButtonDiv.style.justifySelf = "end";
+        const timerButtonDiv = document.createElement("div");
+        timerButtonDiv.style.marginTop = "8px";
+        timerButtonDiv.style.justifySelf = "end";
 
-    const timerButton = document.createElement("button");
-    timerButtonDiv.append(timerButton);
-    timerButton.setAttribute(
-      "class",
-      "px-3 py-1.5 font-medium items-center whitespace-nowrap focus:outline-none inline-flex text-label-r bg-yellow-1 dark:bg-yellow-1 hover:bg-yellow-10 dark:hover:bg-yellow-10 rounded-lg"
-    );
-    timerButton.innerHTML = "Start Timer Too";
-    timerButton.id = "confirm-and-timer-button";
-    resetPopupContainer.append(timerButtonDiv);
-
-    return { stopwatchButton, timerButton, resetCodeOnlyButton };
-  };
+        const timerButton = document.createElement("button");
+        timerButtonDiv.append(timerButton);
+        timerButton.setAttribute(
+          "class",
+          "px-3 py-1.5 font-medium items-center whitespace-nowrap focus:outline-none inline-flex text-label-r bg-yellow-1 dark:bg-yellow-1 hover:bg-yellow-10 dark:hover:bg-yellow-10 rounded-lg"
+        );
+        timerButton.innerHTML = "Start Timer Too";
+        timerButton.id = "confirm-and-timer-button";
+        resetPopupContainer.append(timerButtonDiv);
+        resolve();
+      });
+    });
 
   waitForElm(codeResetSelector).then((resetButton) => {
     resetButton.click();
     waitForElm(codeResetPopupSelectors.backdrop).then((backdrop) => {
-      const { stopwatchButton, timerButton, resetCodeOnlyButton } =
-        editResetCodePopup(backdrop);
-      const cancelButton = document.querySelector(
-        codeResetPopupSelectors.cancelButton
-      );
-      clockOption = "stopwatch";
-      cancelButton.addEventListener("click", onClickCanceled);
-      stopwatchButton.addEventListener("click", onClickRestartStopwatch);
-      timerButton.addEventListener("click", onClickStartTimer);
-      resetCodeOnlyButton.addEventListener("click", onClickResetCodeOnly);
+      editResetCodePopup(backdrop).then(() => {
+        const cancelButton = document.querySelector(
+          codeResetPopupSelectors.cancelButton
+        );
+        const stopwatchButton = document.getElementById(
+          "confirm-and-stopwatch-button"
+        );
+        const timerButton = document.getElementById("confirm-and-timer-button");
+        const resetCodeOnlyButton = document.getElementById(
+          "confirm-and-reset-code-button"
+        );
+        clockOption = "stopwatch";
+        cancelButton.addEventListener("click", onClickCanceled);
+        stopwatchButton.addEventListener("click", onClickRestartStopwatch);
+        timerButton.addEventListener("click", onClickStartTimer);
+        resetCodeOnlyButton.addEventListener("click", onClickResetCodeOnly);
+      });
     });
   });
 };

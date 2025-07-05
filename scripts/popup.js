@@ -20,20 +20,27 @@ const timerInputOnBlur = (event) => {
   }
   hrInput.value = hrValue;
   minInput.value = minValue;
-  setStateValue("timer", {
+  timerValue = {
     ...timerValue,
     [diff]: totalValue,
+  };
+  chrome.storage.local.set({
+    timer: timerValue,
   });
 };
 
 const documentOnLoad = () =>
-  getStateValue("timer").then((res) => {
-    timerValue = res.value;
+  chrome.storage.local.get("timer").then((res) => {
+    res = res.timer;
+    if (!res || Object.keys(res).length === 0) {
+      chrome.storage.local.set({
+        timer: { easy: 10, medium: 15, hard: 20 },
+      });
+      res = { easy: 10, medium: 15, hard: 20 };
+    }
+    timerValue = res;
     ["easy", "medium", "hard"].forEach((diff) => {
-      const values = [
-        Math.floor(timerValue[diff] / 60),
-        Math.floor(timerValue[diff] % 60),
-      ];
+      const values = [Math.floor(res[diff] / 60), Math.floor(res[diff] % 60)];
       const valueIndex = ["hr", "min"];
       ["hr", "min"].forEach((time) => {
         const inputElement = document.getElementById(
