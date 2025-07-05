@@ -15,15 +15,15 @@ const clockPopupSelectors = {
 
 const codeResetPopupSelectors = {
   cancelButton:
-    "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(9) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > button",
+    "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(8) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div > div:nth-of-type(1) > button",
   confirmButton:
-    "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(9) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div > div:nth-of-type(2) > button",
+    "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(8) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div > div:nth-of-type(2) > button",
   backdrop:
-    "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(9) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(1)",
+    "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(8) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(1)",
   heading:
-    "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(9) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > h3",
+    "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(8) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > h3",
   paragraph:
-    "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(9) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div",
+    "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(8) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div",
 };
 
 const clockDivSelector =
@@ -31,6 +31,6 @@ const clockDivSelector =
 const clockResetSelector =
   "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(3) > nav > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(4) > div > div > div:nth-of-type(1) > div > div:nth-of-type(3)";
 const codeResetSelector =
-  "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(9) > div > div:nth-of-type(1) > div:nth-of-type(2) > button:nth-of-type(4)";
+  "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(8) > div > div:nth-of-type(1) > div:nth-of-type(2) > button:nth-of-type(4)";
 const difficultyChip =
   "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(4) > div > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1)";
