@@ -36,3 +36,5 @@ const difficultyChip =
   "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(4) > div > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1)";
 const solvedStatus =
   "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(4) > div > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2)";
+const submissionsListDiv =
+  "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(7) > div > div:nth-of-type(2)";

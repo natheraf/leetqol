@@ -239,7 +239,7 @@ const main = () => {
       );
       headingElement.innerHTML = "Reset code and clock?";
 
-      if (showSolvedInPrompt) {
+      if (hideProblemIsSolved === false && showSolvedInPrompt) {
         const solvedStatusElement = document
           .querySelector(solvedStatus)
           ?.cloneNode(true);
@@ -342,6 +342,16 @@ const main = () => {
         resolve();
       });
     });
+
+  const deleteAllIndicationsOfSolvedProblems = () => {
+    waitForElm(solvedStatus).then(
+      (solvedStatusElement) => (solvedStatusElement.style.display = "none")
+    );
+  };
+
+  if (hideProblemIsSolved) {
+    deleteAllIndicationsOfSolvedProblems();
+  }
 
   waitForElm(codeResetSelector).then((resetButton) => {
     resetButton.click();
