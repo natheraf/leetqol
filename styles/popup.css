@@ -31,3 +31,11 @@ h6 {
   align-items: center;
   border-bottom: 3px solid #bbb;
 }
+
+.timer-input-line {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  align-items: center;
+  gap: 5px;
+}

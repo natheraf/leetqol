@@ -3,6 +3,7 @@
   <head>
     <title>LeetQoL</title>
     <script src="scripts/popup.js"></script>
+    <script src="scripts/indexeddb.js"></script>
     <link rel="stylesheet" href="styles/popup.css" />
   </head>
   <body>
@@ -31,13 +32,41 @@
       <h1>Timer length</h1>
       <div class="timer-line">
         <h2>Easy</h2>
-        <div class="timer-input-group">
-          <input class="timer-input" type="text" />
-          <h4>Hr</h4>
+        <div class="timer-input-line">
+          <div class="timer-input-group">
+            <input id="easy-hr-textfield" class="timer-input" type="text" />
+            <h4>Hr</h4>
+          </div>
+          <div class="timer-input-group">
+            <input id="easy-min-textfield" class="timer-input" type="text" />
+            <h4>Min</h4>
+          </div>
         </div>
-        <div class="timer-input-group">
-          <input class="timer-input" type="text" />
-          <h4>Min</h4>
+      </div>
+      <div class="timer-line">
+        <h2>Medium</h2>
+        <div class="timer-input-line">
+          <div class="timer-input-group">
+            <input id="medium-hr-textfield" class="timer-input" type="text" />
+            <h4>Hr</h4>
+          </div>
+          <div class="timer-input-group">
+            <input id="medium-min-textfield" class="timer-input" type="text" />
+            <h4>Min</h4>
+          </div>
+        </div>
+      </div>
+      <div class="timer-line">
+        <h2>Hard</h2>
+        <div class="timer-input-line">
+          <div class="timer-input-group">
+            <input id="hard-hr-textfield" class="timer-input" type="text" />
+            <h4>Hr</h4>
+          </div>
+          <div class="timer-input-group">
+            <input id="hard-min-textfield" class="timer-input" type="text" />
+            <h4>Min</h4>
+          </div>
         </div>
       </div>
     </div>
