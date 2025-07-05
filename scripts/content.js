@@ -128,9 +128,26 @@ const getPower = () =>
     })
   );
 
+let autoResetType = "prompt";
+const getAutoResetType = () =>
+  new Promise((resolve, _reject) =>
+    chrome.storage.local.get("autoResetType").then((res) => {
+      res = res.autoResetType;
+      if (res === undefined) {
+        res = "prompt";
+      }
+      autoResetType = res;
+      chrome.storage.local
+        .set({
+          autoResetType,
+        })
+        .then(resolve);
+    })
+  );
+
 const loadAllLocalData = () =>
   new Promise((resolve, reject) => {
-    Promise.all([getPower()]).then(resolve);
+    Promise.all([getPower(), getAutoResetType()]).then(resolve);
   });
 
 const main = () => {
@@ -271,21 +288,31 @@ const main = () => {
     resetButton.click();
     waitForElm(codeResetPopupSelectors.backdrop).then((backdrop) => {
       editResetCodePopup(backdrop).then(() => {
-        const cancelButton = document.querySelector(
-          codeResetPopupSelectors.cancelButton
-        );
-        const stopwatchButton = document.getElementById(
-          "confirm-and-stopwatch-button"
-        );
-        const timerButton = document.getElementById("confirm-and-timer-button");
-        const resetCodeOnlyButton = document.getElementById(
-          "confirm-and-reset-code-button"
-        );
-        clockOption = "stopwatch";
-        cancelButton.addEventListener("click", onClickCanceled);
-        stopwatchButton.addEventListener("click", onClickRestartStopwatch);
-        timerButton.addEventListener("click", onClickStartTimer);
-        resetCodeOnlyButton.addEventListener("click", onClickResetCodeOnly);
+        if (autoResetType === "code") {
+          onClickResetCodeOnly();
+        } else if (autoResetType === "stopwatch") {
+          onClickRestartStopwatch();
+        } else if (autoResetType === "timer") {
+          onClickStartTimer();
+        } else if (autoResetType === "prompt") {
+          const cancelButton = document.querySelector(
+            codeResetPopupSelectors.cancelButton
+          );
+          const stopwatchButton = document.getElementById(
+            "confirm-and-stopwatch-button"
+          );
+          const timerButton = document.getElementById(
+            "confirm-and-timer-button"
+          );
+          const resetCodeOnlyButton = document.getElementById(
+            "confirm-and-reset-code-button"
+          );
+          clockOption = "stopwatch";
+          cancelButton.addEventListener("click", onClickCanceled);
+          stopwatchButton.addEventListener("click", onClickRestartStopwatch);
+          timerButton.addEventListener("click", onClickStartTimer);
+          resetCodeOnlyButton.addEventListener("click", onClickResetCodeOnly);
+        }
       });
     });
   });

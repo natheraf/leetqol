@@ -29,48 +29,106 @@
           />
         </button>
       </div>
-      <div id="main-div">
-        <h1>Timer length</h1>
-        <div class="timer-line">
-          <h2>Easy</h2>
-          <div class="timer-input-line">
-            <div class="timer-input-group">
-              <input id="easy-hr-textfield" class="timer-input" type="text" />
-              <h4>Hr</h4>
+      <div
+        id="main-div"
+        style="display: flex; flex-direction: column; gap: 1rem"
+      >
+        <div>
+          <h1>Timer length</h1>
+          <div class="timer-line">
+            <h2>Easy</h2>
+            <div class="timer-input-line">
+              <div class="timer-input-group">
+                <input id="easy-hr-textfield" class="timer-input" type="text" />
+                <h4>Hr</h4>
+              </div>
+              <div class="timer-input-group">
+                <input
+                  id="easy-min-textfield"
+                  class="timer-input"
+                  type="text"
+                />
+                <h4>Min</h4>
+              </div>
             </div>
-            <div class="timer-input-group">
-              <input id="easy-min-textfield" class="timer-input" type="text" />
-              <h4>Min</h4>
+          </div>
+          <div class="timer-line">
+            <h2>Medium</h2>
+            <div class="timer-input-line">
+              <div class="timer-input-group">
+                <input
+                  id="medium-hr-textfield"
+                  class="timer-input"
+                  type="text"
+                />
+                <h4>Hr</h4>
+              </div>
+              <div class="timer-input-group">
+                <input
+                  id="medium-min-textfield"
+                  class="timer-input"
+                  type="text"
+                />
+                <h4>Min</h4>
+              </div>
+            </div>
+          </div>
+          <div class="timer-line">
+            <h2>Hard</h2>
+            <div class="timer-input-line">
+              <div class="timer-input-group">
+                <input id="hard-hr-textfield" class="timer-input" type="text" />
+                <h4>Hr</h4>
+              </div>
+              <div class="timer-input-group">
+                <input
+                  id="hard-min-textfield"
+                  class="timer-input"
+                  type="text"
+                />
+                <h4>Min</h4>
+              </div>
             </div>
           </div>
         </div>
-        <div class="timer-line">
-          <h2>Medium</h2>
-          <div class="timer-input-line">
-            <div class="timer-input-group">
-              <input id="medium-hr-textfield" class="timer-input" type="text" />
-              <h4>Hr</h4>
-            </div>
-            <div class="timer-input-group">
+        <div>
+          <h1>Auto Reset</h1>
+          <div style="display: flex; flex-direction: column">
+            <div>
               <input
-                id="medium-min-textfield"
-                class="timer-input"
-                type="text"
+                type="radio"
+                id="reset-prompt-radio"
+                name="auto-reset"
+                value="prompt"
               />
-              <h4>Min</h4>
+              <label for="reset-prompt-radio">Prompt</label>
             </div>
-          </div>
-        </div>
-        <div class="timer-line">
-          <h2>Hard</h2>
-          <div class="timer-input-line">
-            <div class="timer-input-group">
-              <input id="hard-hr-textfield" class="timer-input" type="text" />
-              <h4>Hr</h4>
+            <div>
+              <input
+                type="radio"
+                id="reset-code-radio"
+                name="auto-reset"
+                value="code"
+              />
+              <label for="reset-code-radio">Code only</label>
             </div>
-            <div class="timer-input-group">
-              <input id="hard-min-textfield" class="timer-input" type="text" />
-              <h4>Min</h4>
+            <div>
+              <input
+                type="radio"
+                id="reset-stopwatch-radio"
+                name="auto-reset"
+                value="stopwatch"
+              />
+              <label for="reset-stopwatch-radio">Code and stopwatch</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="reset-timer-radio"
+                name="auto-reset"
+                value="timer"
+              />
+              <label for="reset-timer-radio">Code and timer</label>
             </div>
           </div>
         </div>

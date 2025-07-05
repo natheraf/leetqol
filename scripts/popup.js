@@ -38,7 +38,6 @@ const getPower = () =>
         res = true;
       }
       power = res;
-      console.log(power);
       chrome.storage.local
         .set({
           power,
@@ -47,9 +46,33 @@ const getPower = () =>
     })
   );
 
+let autoResetType = "prompt";
+const getAutoResetType = () =>
+  new Promise((resolve, _reject) =>
+    chrome.storage.local.get("autoResetType").then((res) => {
+      res = res.autoResetType;
+      if (res === undefined) {
+        res = "prompt";
+      }
+      autoResetType = res;
+      chrome.storage.local
+        .set({
+          autoResetType,
+        })
+        .then(resolve);
+    })
+  );
+
+const autoResetTypeCheckboxOnChange = (event) =>
+  new Promise((resolve, _reject) => {
+    const type = event.target.id.split("-")[1];
+    autoResetType = type;
+    chrome.storage.local.set({ autoResetType }).then(resolve);
+  });
+
 const loadAllLocalData = () =>
   new Promise((resolve, reject) => {
-    Promise.all([getPower()]).then(resolve);
+    Promise.all([getPower(), getAutoResetType()]).then(resolve);
   });
 
 const togglePower = () => {
@@ -62,36 +85,45 @@ const togglePower = () => {
 };
 
 const documentOnLoad = () => {
-  loadAllLocalData().then(() => {
-    chrome.storage.local.get("timer").then((res) => {
-      res = res.timer;
-      if (!res || Object.keys(res).length === 0) {
-        chrome.storage.local.set({
-          timer: { easy: 10, medium: 15, hard: 20 },
-        });
-        res = { easy: 10, medium: 15, hard: 20 };
-      }
-      timerValue = res;
-      ["easy", "medium", "hard"].forEach((diff) => {
-        const values = [Math.floor(res[diff] / 60), Math.floor(res[diff] % 60)];
-        const valueIndex = ["hr", "min"];
-        ["hr", "min"].forEach((time) => {
-          const inputElement = document.getElementById(
-            `${diff}-${time}-textfield`
-          );
-          inputElement.value = values[valueIndex.indexOf(time)];
-          inputElement.addEventListener("blur", timerInputOnBlur);
-        });
+  chrome.storage.local.get("timer").then((res) => {
+    res = res.timer;
+    if (!res || Object.keys(res).length === 0) {
+      chrome.storage.local.set({
+        timer: { easy: 10, medium: 15, hard: 20 },
+      });
+      res = { easy: 10, medium: 15, hard: 20 };
+    }
+    timerValue = res;
+    ["easy", "medium", "hard"].forEach((diff) => {
+      const values = [Math.floor(res[diff] / 60), Math.floor(res[diff] % 60)];
+      const valueIndex = ["hr", "min"];
+      ["hr", "min"].forEach((time) => {
+        const inputElement = document.getElementById(
+          `${diff}-${time}-textfield`
+        );
+        inputElement.value = values[valueIndex.indexOf(time)];
+        inputElement.addEventListener("blur", timerInputOnBlur);
       });
     });
-    document
-      .getElementById("power-toggle-btn")
-      .addEventListener("click", togglePower);
-    if (power === false) {
-      document.getElementById("main-div").style.display = "none";
-      document.getElementById("power-off").style.display = "unset";
+  });
+  document
+    .getElementById("power-toggle-btn")
+    .addEventListener("click", togglePower);
+  if (power === false) {
+    document.getElementById("main-div").style.display = "none";
+    document.getElementById("power-off").style.display = "unset";
+  }
+  ["prompt", "code", "stopwatch", "timer"].forEach((type) => {
+    const checkboxElement = document.getElementById(`reset-${type}-radio`);
+    if (autoResetType === type) {
+      checkboxElement.checked = true;
     }
+    checkboxElement.addEventListener("change", autoResetTypeCheckboxOnChange);
   });
 };
 
-document.addEventListener("DOMContentLoaded", documentOnLoad, false);
+document.addEventListener(
+  "DOMContentLoaded",
+  () => loadAllLocalData().then(documentOnLoad),
+  false
+);

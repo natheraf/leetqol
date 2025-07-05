@@ -39,3 +39,8 @@ h6 {
   align-items: center;
   gap: 5px;
 }
+
+.radio-group {
+  display: flex;
+  flex-direction: row;
+}
