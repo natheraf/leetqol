@@ -29,27 +29,69 @@ const timerInputOnBlur = (event) => {
   });
 };
 
-const documentOnLoad = () =>
-  chrome.storage.local.get("timer").then((res) => {
-    res = res.timer;
-    if (!res || Object.keys(res).length === 0) {
-      chrome.storage.local.set({
-        timer: { easy: 10, medium: 15, hard: 20 },
-      });
-      res = { easy: 10, medium: 15, hard: 20 };
-    }
-    timerValue = res;
-    ["easy", "medium", "hard"].forEach((diff) => {
-      const values = [Math.floor(res[diff] / 60), Math.floor(res[diff] % 60)];
-      const valueIndex = ["hr", "min"];
-      ["hr", "min"].forEach((time) => {
-        const inputElement = document.getElementById(
-          `${diff}-${time}-textfield`
-        );
-        inputElement.value = values[valueIndex.indexOf(time)];
-        inputElement.addEventListener("blur", timerInputOnBlur);
+let power = true;
+const getPower = () =>
+  new Promise((resolve, _reject) =>
+    chrome.storage.local.get("power").then((res) => {
+      res = res.power;
+      if (res === undefined) {
+        res = true;
+      }
+      power = res;
+      console.log(power);
+      chrome.storage.local
+        .set({
+          power,
+        })
+        .then(resolve);
+    })
+  );
+
+const loadAllLocalData = () =>
+  new Promise((resolve, reject) => {
+    Promise.all([getPower()]).then(resolve);
+  });
+
+const togglePower = () => {
+  power = !power;
+  chrome.storage.local.set({
+    power,
+  });
+  document.getElementById("main-div").style.display = power ? "unset" : "none";
+  document.getElementById("power-off").style.display = power ? "none" : "unset";
+};
+
+const documentOnLoad = () => {
+  loadAllLocalData().then(() => {
+    chrome.storage.local.get("timer").then((res) => {
+      res = res.timer;
+      if (!res || Object.keys(res).length === 0) {
+        chrome.storage.local.set({
+          timer: { easy: 10, medium: 15, hard: 20 },
+        });
+        res = { easy: 10, medium: 15, hard: 20 };
+      }
+      timerValue = res;
+      ["easy", "medium", "hard"].forEach((diff) => {
+        const values = [Math.floor(res[diff] / 60), Math.floor(res[diff] % 60)];
+        const valueIndex = ["hr", "min"];
+        ["hr", "min"].forEach((time) => {
+          const inputElement = document.getElementById(
+            `${diff}-${time}-textfield`
+          );
+          inputElement.value = values[valueIndex.indexOf(time)];
+          inputElement.addEventListener("blur", timerInputOnBlur);
+        });
       });
     });
+    document
+      .getElementById("power-toggle-btn")
+      .addEventListener("click", togglePower);
+    if (power === false) {
+      document.getElementById("main-div").style.display = "none";
+      document.getElementById("power-off").style.display = "unset";
+    }
   });
+};
 
 document.addEventListener("DOMContentLoaded", documentOnLoad, false);

@@ -110,6 +110,29 @@ const handleClickClockReset = () => {
   });
 };
 
+let power = true;
+const getPower = () =>
+  new Promise((resolve, _reject) =>
+    chrome.storage.local.get("power").then((res) => {
+      res = res.power;
+      if (res === undefined) {
+        res = true;
+      }
+      power = res;
+      console.log(power);
+      chrome.storage.local
+        .set({
+          power,
+        })
+        .then(resolve);
+    })
+  );
+
+const loadAllLocalData = () =>
+  new Promise((resolve, reject) => {
+    Promise.all([getPower()]).then(resolve);
+  });
+
 const main = () => {
   const clearClickListeners = () => {
     const resetCodeOnlyButton = document.getElementById(
@@ -279,13 +302,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.message === "problem on screen") {
     console.log("url changed, problem on screen");
     if (isNewProblem()) {
-      main();
+      loadAllLocalData().then(() => (power ? main() : null));
     }
   }
 });
 
 if (location.href.startsWith("https://leetcode.com/problems/")) {
   if (isNewProblem()) {
-    main();
+    loadAllLocalData().then(() => (power ? main() : null));
   }
 }
