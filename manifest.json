@@ -1,11 +1,11 @@
 {
   "name": "LeetQoL",
-  "description": "Leetcode Quality of Life stuff",
+  "description": "Leetcode Quality of Life",
   "version": "1.0",
   "manifest_version": 3,
   "action": {
     "default_popup": "popup.html",
-    "default_icon": "public/logo.png"
+    "default_icon": "public/logo_128x128.png"
   },
   "permissions": ["tabs", "storage"],
   "background": {
