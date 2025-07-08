@@ -13,7 +13,11 @@
   },
   "content_scripts": [
     {
-      "js": ["scripts/selectors.config.js", "scripts/content.js"],
+      "js": [
+        "scripts/selectors.config.js",
+        "scripts/localStorage.js",
+        "scripts/content.js"
+      ],
       "matches": ["https://leetcode.com/*"],
       "run_at": "document_start"
     }

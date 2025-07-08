@@ -110,77 +110,10 @@ const handleClickClockReset = () => {
   });
 };
 
-let power = true;
-const getPower = () =>
-  new Promise((resolve, _reject) =>
-    chrome.storage.local.get("power").then((res) => {
-      res = res.power;
-      if (res === undefined) {
-        res = true;
-      }
-      power = res;
-      chrome.storage.local
-        .set({
-          power,
-        })
-        .then(resolve);
-    })
-  );
-
-let autoResetType = "prompt";
-const getAutoResetType = () =>
-  new Promise((resolve, _reject) =>
-    chrome.storage.local.get("autoResetType").then((res) => {
-      res = res.autoResetType;
-      if (res === undefined) {
-        res = "prompt";
-      }
-      autoResetType = res;
-      chrome.storage.local
-        .set({
-          autoResetType,
-        })
-        .then(resolve);
-    })
-  );
-
-let showSolvedInPrompt = false;
-const getShowSolvedInPrompt = () =>
-  new Promise((resolve, _reject) =>
-    chrome.storage.local.get("showSolvedInPrompt").then((res) => {
-      res = res.showSolvedInPrompt;
-      if (res === undefined) {
-        res = false;
-      }
-      showSolvedInPrompt = res;
-      chrome.storage.local.set({ showSolvedInPrompt }).then(resolve);
-    })
-  );
-
-let hideProblemIsSolved = false;
-const getHideProblemIsSolved = () =>
-  new Promise((resolve, _reject) =>
-    chrome.storage.local.get("hideProblemIsSolved").then((res) => {
-      res = res.hideProblemIsSolved;
-      if (res === undefined) {
-        res = false;
-      }
-      hideProblemIsSolved = res;
-      chrome.storage.local.set({ hideProblemIsSolved }).then(resolve);
-    })
-  );
-
-const loadAllLocalData = () =>
-  new Promise((resolve, reject) => {
-    Promise.all([
-      getPower(),
-      getAutoResetType(),
-      getShowSolvedInPrompt(),
-      getHideProblemIsSolved(),
-    ]).then(resolve);
-  });
-
-const main = () => {
+function main() {
+  if (!power) {
+    return;
+  }
   const clearClickListeners = () => {
     const resetCodeOnlyButton = document.getElementById(
       "confirm-and-reset-code-button"
@@ -388,7 +321,7 @@ const main = () => {
       });
     });
   });
-};
+}
 
 const isNewProblem = () => {
   const problemOnScreen = location.href.split("/")[4] ?? null;
@@ -401,13 +334,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.message === "problem on screen") {
     console.log("url changed, problem on screen");
     if (isNewProblem()) {
-      loadAllLocalData().then(() => (power ? main() : null));
+      assignAllLocalData().then(main);
     }
   }
 });
 
 if (location.href.startsWith("https://leetcode.com/problems/")) {
   if (isNewProblem()) {
-    loadAllLocalData().then(() => (power ? main() : null));
+    assignAllLocalData().then(main);
   }
 }
