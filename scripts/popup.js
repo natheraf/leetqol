@@ -58,26 +58,15 @@ const togglePower = () => {
   document.getElementById("power-off").style.display = power ? "none" : "unset";
 };
 
-const handleClearAllLocalCode = () =>
-  chrome.tabs
-    .create({ url: "https://leetcode.com/problems/two-sum", active: false })
-    .then((tab) => {
-      const clearAllLocalCodeButton = document.getElementById(
-        "clear-all-local-code-btn"
-      );
-      clearAllLocalCodeButton.disabled = true;
-      whenTabDoneLoading(tab.id)
-        .then(() => {
-          chrome.tabs.sendMessage(tab.id, {
-            message: "clear all local code",
-            tabId: tab.id,
-          });
-          setTimeout(() => {
-            clearAllLocalCodeButton.disabled = false;
-          }, 1000);
-        })
-        .catch(console.error);
-    });
+const handleClearAllLocalCode = () => {
+  const clearAllLocalCodeButton = document.getElementById(
+    "clear-all-local-code-btn"
+  );
+  clearAllLocalCodeButton.disabled = true;
+  chrome.runtime.sendMessage({
+    message: "clear all local code",
+  });
+};
 
 const documentOnLoad = () => {
   ["easy", "medium", "hard"].forEach((diff) => {

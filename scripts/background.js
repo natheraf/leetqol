@@ -15,4 +15,19 @@ chrome?.runtime?.onMessage?.addListener((request, sender) => {
   if (request.message === "close me") {
     chrome.tabs.remove(request.tabId);
   }
+  if (request.message === "clear all local code") {
+    chrome.tabs
+      .create({ url: "https://leetcode.com/problems/two-sum", active: false })
+      .then((tab) => {
+        whenTabDoneLoading(tab.id)
+          .then(() => {
+            chrome.tabs.sendMessage(tab.id, {
+              message: "clear all local code",
+              tabId: tab.id,
+            });
+          })
+          .catch(console.error);
+      })
+      .catch(console.error);
+  }
 });
