@@ -2,13 +2,14 @@
 <html lang="en">
   <head>
     <title>LeetQoL</title>
+    <script src="scripts/tabs.js"></script>
     <script src="scripts/localStorage.js"></script>
     <script src="scripts/popup.js"></script>
     <link rel="stylesheet" href="styles/popup.css" />
   </head>
   <body>
     <div style="width: 250px; display: flex; flex-direction: column">
-      <div class="header">
+      <div class="header border-bottom">
         <h1 style="color: orange">LeetQoL</h1>
         <button
           id="power-toggle-btn"
@@ -160,6 +161,17 @@
             <label for="hide-solved-status-checkbox"
               >Hide all indication problem was solved</label
             >
+          </div>
+          <br />
+          <div style="padding: 10px" class="border-top">
+            <input
+              type="button"
+              id="clear-all-local-code-btn"
+              value="Clear all local code"
+            />
+            <div>
+              Opens a new LeetCode tab and closes itself after completed
+            </div>
           </div>
         </div>
       </div>

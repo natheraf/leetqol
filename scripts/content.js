@@ -336,6 +336,20 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (isNewProblem()) {
       assignAllLocalData().then(main);
     }
+  } else if (request.message === "clear all local code") {
+    indexedDB.databases().then((databases) =>
+      clearObjectStore(
+        "LeetCode-problems",
+        databases.find((db) => db.name === "LeetCode-problems").version,
+        "problem_code"
+      ).then(() => {
+        console.log("clear all local code");
+        chrome.runtime.sendMessage({
+          message: "close me",
+          tabId: request.tabId,
+        });
+      })
+    );
   }
 });
 

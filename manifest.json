@@ -15,6 +15,7 @@
     {
       "js": [
         "scripts/selectors.config.js",
+        "scripts/indexeddb.js",
         "scripts/localStorage.js",
         "scripts/content.js"
       ],

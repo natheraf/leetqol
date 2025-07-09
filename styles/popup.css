@@ -30,12 +30,19 @@ h6 {
   height: 1.5rem;
 }
 
+.border-top {
+  border-top: 3px solid #bbb;
+}
+
+.border-bottom {
+  border-bottom: 3px solid #bbb;
+}
+
 .header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 3px solid #bbb;
 }
 
 .timer-input-line {
