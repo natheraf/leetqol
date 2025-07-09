@@ -13,6 +13,14 @@ h6 {
   line-height: 0px;
 }
 
+.round-button {
+  border-radius: 100%;
+  width: 30px;
+  height: 30px;
+  background: none;
+  cursor: pointer;
+}
+
 .timer-input {
   width: 3rem;
 }
