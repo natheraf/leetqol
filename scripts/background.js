@@ -1,4 +1,5 @@
 self.importScripts("./tabs.js");
+self.importScripts("./indexeddb.js");
 
 chrome?.tabs?.onUpdated?.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.url?.startsWith("https://leetcode.com/problems/")) {

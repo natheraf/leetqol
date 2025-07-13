@@ -16,7 +16,9 @@ const appDataDBOnUpgradeNeeded = function (event) {
       const state = db.createObjectStore("state", {
         keyPath: "key",
       });
-      state.put({ key: "timer", value: { easy: 10, medium: 15, hard: 20 } });
+      const submissions = db.createObjectStore("submissions", {
+        keyPath: "key",
+      });
   }
 };
 
