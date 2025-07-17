@@ -1,7 +1,7 @@
 let currentProblem = null;
 
-function waitForElm(selector) {
-  return new Promise((resolve) => {
+const waitForElm = (selector) =>
+  new Promise((resolve) => {
     if (document.querySelector(selector)) {
       return resolve(document.querySelector(selector));
     }
@@ -19,7 +19,6 @@ function waitForElm(selector) {
       subtree: true,
     });
   });
-}
 
 const fixClockDivWidth = () => {
   const clockElement = document.querySelector(clockDivSelector);
@@ -57,7 +56,7 @@ const handleSelectStopWatch = () => {
   });
 };
 
-function changeValue(input, value) {
+const changeValue = (input, value) => {
   const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
     window.HTMLInputElement.prototype,
     "value"
@@ -66,7 +65,7 @@ function changeValue(input, value) {
 
   const inputEvent = new Event("input", { bubbles: true });
   input.dispatchEvent(inputEvent);
-}
+};
 
 const handleSelectTimer = () => {
   waitForElm(clockPopupSelectors.timer).then((el) => {
@@ -110,7 +109,7 @@ const handleClickClockReset = () => {
   });
 };
 
-function main() {
+const main = () => {
   if (!power) {
     return;
   }
@@ -321,7 +320,7 @@ function main() {
       });
     });
   });
-}
+};
 
 const isNewProblem = () => {
   const problemOnScreen = location.href.split("/")[4] ?? null;
@@ -330,7 +329,7 @@ const isNewProblem = () => {
   return res;
 };
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.message === "problem on screen") {
     console.log("url changed, problem on screen");
     if (isNewProblem()) {

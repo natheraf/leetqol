@@ -9,7 +9,7 @@ const connect = (name, version) => {
   });
 };
 
-const appDataDBOnUpgradeNeeded = function (event) {
+const appDataDBOnUpgradeNeeded = (event) => {
   const db = event.target.result;
   switch (event.oldVersion) {
     case 0:
