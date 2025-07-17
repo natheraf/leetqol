@@ -293,7 +293,7 @@ const main = () => {
     waitForElm(solvedStatus).then(
       (solvedStatusElement) => (solvedStatusElement.style.display = "none")
     );
-    waitForElm(submissionsListDiv).then(
+    waitForElm(submissionTabSelectors.submissionsListDiv).then(
       (submissionsListDiv) => (submissionsListDiv.style.display = "none")
     );
   };
