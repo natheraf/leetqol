@@ -67,6 +67,20 @@ const changeValue = (input, value) => {
   input.dispatchEvent(inputEvent);
 };
 
+const simulateMouseClick = (element) => {
+  const mouseClickEvents = ["mousedown", "click", "mouseup"];
+  mouseClickEvents.forEach((mouseEventType) =>
+    element.dispatchEvent(
+      new MouseEvent(mouseEventType, {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+        buttons: 1,
+      })
+    )
+  );
+};
+
 const handleSelectTimer = () => {
   waitForElm(clockPopupSelectors.timer).then((el) => {
     el.click();
@@ -288,35 +302,44 @@ const main = () => {
     deleteAllIndicationsOfSolvedProblems();
   }
 
-  waitForElm(codeResetSelector).then((resetButton) => {
-    resetButton.click();
-    waitForElm(codeResetPopupSelectors.backdrop).then((backdrop) => {
-      editResetCodePopup(backdrop).then(() => {
-        if (autoResetType === "code") {
-          onClickResetCodeOnly();
-        } else if (autoResetType === "stopwatch") {
-          onClickRestartStopwatch();
-        } else if (autoResetType === "timer") {
-          onClickStartTimer();
-        } else if (autoResetType === "prompt") {
-          const cancelButton = document.querySelector(
-            codeResetPopupSelectors.cancelButton
-          );
-          const stopwatchButton = document.getElementById(
-            "confirm-and-stopwatch-button"
-          );
-          const timerButton = document.getElementById(
-            "confirm-and-timer-button"
-          );
-          const resetCodeOnlyButton = document.getElementById(
-            "confirm-and-reset-code-button"
-          );
-          clockOption = "stopwatch";
-          cancelButton.addEventListener("click", onClickCanceled);
-          stopwatchButton.addEventListener("click", onClickRestartStopwatch);
-          timerButton.addEventListener("click", onClickStartTimer);
-          resetCodeOnlyButton.addEventListener("click", onClickResetCodeOnly);
-        }
+  waitForElm(dPathSelectors.description).then((descriptionPath) => {
+    const descriptionButton =
+      descriptionPath.parentElement.parentElement.parentElement.parentElement;
+    const selectedTabElements = [
+      ...document.getElementsByClassName("flexlayout__tab_button--selected"),
+    ];
+    simulateMouseClick(descriptionButton);
+    waitForElm(codeResetSelector).then((resetButton) => {
+      resetButton.click();
+      waitForElm(codeResetPopupSelectors.backdrop).then((backdrop) => {
+        editResetCodePopup(backdrop).then(() => {
+          if (autoResetType === "code") {
+            onClickResetCodeOnly();
+          } else if (autoResetType === "stopwatch") {
+            onClickRestartStopwatch();
+          } else if (autoResetType === "timer") {
+            onClickStartTimer();
+          } else if (autoResetType === "prompt") {
+            const cancelButton = document.querySelector(
+              codeResetPopupSelectors.cancelButton
+            );
+            const stopwatchButton = document.getElementById(
+              "confirm-and-stopwatch-button"
+            );
+            const timerButton = document.getElementById(
+              "confirm-and-timer-button"
+            );
+            const resetCodeOnlyButton = document.getElementById(
+              "confirm-and-reset-code-button"
+            );
+            clockOption = "stopwatch";
+            cancelButton.addEventListener("click", onClickCanceled);
+            stopwatchButton.addEventListener("click", onClickRestartStopwatch);
+            timerButton.addEventListener("click", onClickStartTimer);
+            resetCodeOnlyButton.addEventListener("click", onClickResetCodeOnly);
+            selectedTabElements.forEach(simulateMouseClick);
+          }
+        });
       });
     });
   });
