@@ -21,7 +21,8 @@ const waitForElm = (selector) =>
   });
 
 const fixClockDivWidth = () => {
-  const clockElement = document.querySelector(clockDivSelector);
+  const resetClockSVG = document.querySelector(dPathSelectors.resetClock);
+  const clockElement = getNthParent(resetClockSVG, 6);
   clockElement.style.width = "122px";
 };
 

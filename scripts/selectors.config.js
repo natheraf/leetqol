@@ -51,8 +51,6 @@ const submissionTabSelectors = {
     "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(4) > div > div > div:nth-of-type(7) > div > div:nth-of-type(2)",
 };
 
-const clockDivSelector =
-  "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(3) > nav > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(4) > div > div";
 const clockResetSelector =
   "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div > div > div:nth-of-type(3) > nav > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(4) > div > div > div:nth-of-type(1) > div > div:nth-of-type(3)";
 const codeResetSelector =
