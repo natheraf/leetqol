@@ -141,7 +141,8 @@ const handleSelectTimer = () => {
 
 let clockOption = "stopwatch";
 const handleClickClockReset = () => {
-  waitForElm(clockResetSelector).then((el) => {
+  waitForElm(dPathSelectors.resetClock).then((el) => {
+    el = getNthParent(el, 3);
     el.click();
     if (clockOption === "stopwatch") {
       handleSelectStopWatch();
