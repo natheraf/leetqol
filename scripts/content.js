@@ -34,6 +34,13 @@ const getNthParent = (element, n) => {
   return it;
 };
 
+const handleHideClock = () => {
+  waitForElm(dPathSelectors.hideClock).then((el) => {
+    const button = getNthParent(el, 3);
+    simulateMouseClick(button);
+  });
+};
+
 const handleClickBottomButton = () => {
   waitForElm(clockPopupSelectors.bottomButton).then((el) => {
     const observer = new MutationObserver((mutations) => {
@@ -46,7 +53,11 @@ const handleClickBottomButton = () => {
             clockPopupSelectors.bottomButton
           );
           startButton.click();
-          setTimeout(fixClockDivWidth, 300);
+          if (hideClock) {
+            handleHideClock();
+          } else {
+            setTimeout(fixClockDivWidth, 300);
+          }
         }
       });
     });

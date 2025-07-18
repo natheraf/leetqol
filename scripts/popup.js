@@ -44,6 +44,13 @@ const hideProblemIsSolvedOnChange = (event) =>
     setDataFromLocal("hideProblemIsSolved", hideProblemIsSolved).then(resolve);
   });
 
+const hideClockOnChange = (event) =>
+  new Promise((resolve, _reject) => {
+    const checked = event.target.checked;
+    hideClock = checked;
+    setDataFromLocal("hideClock", hideClock).then(resolve);
+  });
+
 const autoResetTypeRadioOnChange = (event) =>
   new Promise((resolve, _reject) => {
     const type = event.target.id.split("-")[1];
@@ -117,6 +124,10 @@ const documentOnLoad = () => {
     "clear-all-local-code-btn"
   );
   clearAllLocalCodeButton.addEventListener("click", handleClearAllLocalCode);
+
+  const hideClockCheckbox = document.getElementById("hide-clock-checkbox");
+  hideClockCheckbox.checked = hideClock;
+  hideClockCheckbox.addEventListener("change", hideClockOnChange);
 };
 
 document.addEventListener(
