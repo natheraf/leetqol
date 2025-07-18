@@ -208,13 +208,13 @@ const main = () => {
           waitForElm(dPathSelectors.shareMySolutions).then(
             (shareMySolutions) => {
               const shareMySolutionsButton = getNthParent(shareMySolutions, 3);
+              shareMySolutionsButton.disabled = false;
               let it = shareMySolutionsButton.previousSibling;
               while (it) {
                 it.style.display = "none";
                 it = it.previousSibling;
               }
               simulateMouseClick(descriptionButton);
-              console.log("test");
               resolve();
             }
           );
