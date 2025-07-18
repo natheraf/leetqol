@@ -25,6 +25,15 @@ const fixClockDivWidth = () => {
   clockElement.style.width = "122px";
 };
 
+const getNthParent = (element, n) => {
+  let it = element;
+  while (it && n > 0) {
+    it = it.parentElement;
+    n -= 1;
+  }
+  return it;
+};
+
 const handleClickBottomButton = () => {
   waitForElm(clockPopupSelectors.bottomButton).then((el) => {
     const observer = new MutationObserver((mutations) => {
@@ -81,6 +90,15 @@ const simulateMouseClick = (element) => {
   );
 };
 
+const getDifficultyChip = () => {
+  const easyChip = difficultyChipClasses.easy;
+  const mediumChip = difficultyChipClasses.medium;
+  const hardChip = difficultyChipClasses.hard;
+  return [easyChip, mediumChip, hardChip]
+    .map((chip) => document.getElementsByClassName(chip)[0])
+    .find((e) => e);
+};
+
 const handleSelectTimer = () => {
   waitForElm(clockPopupSelectors.timer).then((el) => {
     el.click();
@@ -92,9 +110,8 @@ const handleSelectTimer = () => {
         });
         res = { easy: 10, medium: 15, hard: 20 };
       }
-      const difficultyValue = document
-        .querySelector(difficultyChip)
-        .textContent.toLowerCase();
+      const difficultyElement = getDifficultyChip();
+      const difficultyValue = difficultyElement.textContent.toLowerCase();
       const timerValue = res[difficultyValue];
       const hrValue = Math.floor(parseInt(timerValue) / 60);
       const minValue = parseInt(timerValue) % 60;
@@ -123,21 +140,29 @@ const handleClickClockReset = () => {
   });
 };
 
+let initFinished = false;
+const toggleInit = () => {
+  waitForElm("html > body > div:nth-of-type(1) > div:nth-of-type(2)").then(
+    (mainDiv) => {
+      mainDiv.style.visibility = initFinished ? "visible" : "hidden";
+      initFinished = !initFinished;
+    }
+  );
+};
+
 const main = () => {
   if (!power) {
     return;
   }
+  let descriptionButton = null,
+    cancelButton = null,
+    confirmButton = null,
+    stopwatchButton = null,
+    timerButton = null,
+    resetCodeOnlyButton = null;
+
   const clearClickListeners = () => {
-    const resetCodeOnlyButton = document.getElementById(
-      "confirm-and-reset-code-button"
-    );
-    const timerButton = document.getElementById("confirm-and-timer-button");
-    const cancelButton = document.querySelector(
-      codeResetPopupSelectors.cancelButton
-    );
-    const stopwatchButton = document.getElementById(
-      "confirm-and-stopwatch-button"
-    );
+    simulateMouseClick(descriptionButton);
     cancelButton.removeEventListener("click", onClickCanceled);
     stopwatchButton.removeEventListener("click", () => onClickRestartStopwatch);
     timerButton?.removeEventListener("click", () => onClickStartTimer);
@@ -145,9 +170,6 @@ const main = () => {
   };
 
   const clickConfirmButton = () => {
-    const confirmButton = document.querySelector(
-      codeResetPopupSelectors.confirmButton
-    );
     confirmButton.click();
   };
 
@@ -177,19 +199,80 @@ const main = () => {
     clearClickListeners();
   };
 
+  const handleSolutionsTab = () =>
+    new Promise((resolve, _reject) => {
+      if (hideProblemIsSolved) {
+        waitForElm(dPathSelectors.solutions).then((solutions) => {
+          const solutionsTab = getNthParent(solutions, 5);
+          simulateMouseClick(solutionsTab);
+          waitForElm(dPathSelectors.shareMySolutions).then(
+            (shareMySolutions) => {
+              const shareMySolutionsButton = getNthParent(shareMySolutions, 3);
+              let it = shareMySolutionsButton.previousSibling;
+              while (it) {
+                it.style.display = "none";
+                it = it.previousSibling;
+              }
+              simulateMouseClick(descriptionButton);
+              console.log("test");
+              resolve();
+            }
+          );
+        });
+      } else {
+        resolve();
+      }
+    });
+
+  const handleSubmissionsTab = () =>
+    new Promise((resolve, _reject) => {
+      if (hideProblemIsSolved) {
+        waitForElm(dPathSelectors.submission).then((submission) => {
+          const submissionsTab = getNthParent(submission, 5);
+          submissionsTab.style.display = "none";
+          resolve();
+        });
+      } else {
+        resolve();
+      }
+    });
+
+  const handleSolvedStatus = () =>
+    new Promise((resolve, _reject) => {
+      if (hideProblemIsSolved) {
+        const easyChip = `.${difficultyChipClasses.easy}`;
+        const mediumChip = `.${difficultyChipClasses.medium}`;
+        const hardChip = `.${difficultyChipClasses.hard}`;
+        const promises = [easyChip, mediumChip, hardChip].map((difficulty) =>
+          waitForElm(difficulty)
+        );
+        Promise.any(promises).then(() => {
+          waitForElm(dPathSelectors.solved).then((solvedStatusPathElement) => {
+            getNthParent(solvedStatusPathElement, 2).style.display = "none";
+          });
+          resolve();
+        });
+      } else {
+        resolve();
+      }
+    });
+
   const editResetCodePopup = (backdrop) =>
     new Promise((resolve, reject) => {
       backdrop.style.backgroundColor = "black";
-      const headingElement = document.querySelector(
-        codeResetPopupSelectors.heading
-      );
+      const textDiv = backdrop.nextSibling.firstChild.firstChild.childNodes[1];
+      const buttonDiv =
+        backdrop.nextSibling.firstChild.childNodes[1].firstChild.firstChild;
+      cancelButton = buttonDiv.firstChild.firstChild;
+      confirmButton = buttonDiv.childNodes[1].firstChild;
+      const headingElement = textDiv.firstChild;
       headingElement.innerHTML = "Reset code and clock?";
 
       if (hideProblemIsSolved === false && showSolvedInPrompt) {
-        const solvedStatusElement = document
-          .querySelector(solvedStatus)
-          ?.cloneNode(true);
-        const textDiv = headingElement.parentElement;
+        const solvedStatusElement = getNthParent(
+          document.querySelector(dPathSelectors.solved),
+          2
+        )?.cloneNode(true);
         const isSolvedDiv = document.createElement("div");
         textDiv.prepend(isSolvedDiv);
         const isSolvedText = document.createElement("div");
@@ -211,16 +294,12 @@ const main = () => {
         }
       }
 
-      const confirmButton = document.querySelector(
-        codeResetPopupSelectors.confirmButton
-      );
       confirmButton.parentElement.style.display = "none";
-      const buttonContainer = confirmButton.parentElement.parentElement;
 
       const stopwatchButtonDiv = document.createElement("div");
       stopwatchButtonDiv.style.margin = "8px";
 
-      const stopwatchButton = document.createElement("button");
+      stopwatchButton = document.createElement("button");
       stopwatchButtonDiv.append(stopwatchButton);
       stopwatchButton.setAttribute(
         "class",
@@ -228,12 +307,12 @@ const main = () => {
       );
       stopwatchButton.innerHTML = "Reset Stopwatch Too";
       stopwatchButton.id = "confirm-and-stopwatch-button";
-      buttonContainer.append(stopwatchButtonDiv);
+      buttonDiv.append(stopwatchButtonDiv);
 
       const resetCodeOnlyButtonDiv = document.createElement("div");
       resetCodeOnlyButtonDiv.style.margin = "8px";
 
-      const resetCodeOnlyButton = document.createElement("button");
+      resetCodeOnlyButton = document.createElement("button");
       resetCodeOnlyButtonDiv.append(resetCodeOnlyButton);
       resetCodeOnlyButton.setAttribute(
         "class",
@@ -241,17 +320,12 @@ const main = () => {
       );
       resetCodeOnlyButton.innerHTML = "Reset Code Only";
       resetCodeOnlyButton.id = "confirm-and-reset-code-button";
-      buttonContainer.append(resetCodeOnlyButtonDiv);
+      buttonDiv.append(resetCodeOnlyButtonDiv);
 
-      const resetPopupContainer =
-        confirmButton.parentElement.parentElement.parentElement.parentElement
-          .parentElement;
+      const resetPopupContainer = backdrop.nextSibling.firstChild;
 
-      const difficultyValue = document
-        .querySelector(difficultyChip)
-        .textContent.toLowerCase();
-      const difficultyElement =
-        document.querySelector(difficultyChip).outerHTML;
+      const difficultyElement = getDifficultyChip();
+      const difficultyValue = difficultyElement.textContent.toLowerCase();
       const timerDescription = document.createElement("p");
       timerDescription.style.marginTop = "16px";
       timerDescription.style.justifySelf = "end";
@@ -269,14 +343,14 @@ const main = () => {
         const hourWord = hrValue === 1 ? "hour" : "hours";
         timerDescription.innerHTML =
           hrValue === 0 ? "" : `${hrValue} ${hourWord} and `;
-        timerDescription.innerHTML += `${minValue} minutes set for ${difficultyElement}`;
+        timerDescription.innerHTML += `${minValue} minutes set for ${difficultyElement.outerHTML}`;
         resetPopupContainer.append(timerDescription);
 
         const timerButtonDiv = document.createElement("div");
         timerButtonDiv.style.marginTop = "8px";
         timerButtonDiv.style.justifySelf = "end";
 
-        const timerButton = document.createElement("button");
+        timerButton = document.createElement("button");
         timerButtonDiv.append(timerButton);
         timerButton.setAttribute(
           "class",
@@ -289,56 +363,46 @@ const main = () => {
       });
     });
 
-  const deleteAllIndicationsOfSolvedProblems = () => {
-    waitForElm(solvedStatus).then(
-      (solvedStatusElement) => (solvedStatusElement.style.display = "none")
-    );
-    waitForElm(submissionTabSelectors.submissionsListDiv).then(
-      (submissionsListDiv) => (submissionsListDiv.style.display = "none")
-    );
-  };
-
-  if (hideProblemIsSolved) {
-    deleteAllIndicationsOfSolvedProblems();
-  }
-
+  toggleInit();
   waitForElm(dPathSelectors.description).then((descriptionPath) => {
-    const descriptionButton =
-      descriptionPath.parentElement.parentElement.parentElement.parentElement;
-    const selectedTabElements = [
-      ...document.getElementsByClassName("flexlayout__tab_button--selected"),
-    ];
+    descriptionButton = getNthParent(descriptionPath, 4);
     simulateMouseClick(descriptionButton);
-    waitForElm(codeResetSelector).then((resetButton) => {
-      resetButton.click();
-      waitForElm(codeResetPopupSelectors.backdrop).then((backdrop) => {
-        editResetCodePopup(backdrop).then(() => {
-          if (autoResetType === "code") {
-            onClickResetCodeOnly();
-          } else if (autoResetType === "stopwatch") {
-            onClickRestartStopwatch();
-          } else if (autoResetType === "timer") {
-            onClickStartTimer();
-          } else if (autoResetType === "prompt") {
-            const cancelButton = document.querySelector(
-              codeResetPopupSelectors.cancelButton
+    handleSolvedStatus().then(() => {
+      waitForElm(dPathSelectors.codeReset).then((resetButtonSVG) => {
+        getNthParent(resetButtonSVG, 3).click();
+        waitForElm(dPathSelectors.resetInformationIcon).then((el) => {
+          const backdrop = document.getElementsByClassName(
+            "fixed inset-0 bg-black/70 opacity-100"
+          )[0];
+          editResetCodePopup(backdrop).then(() => {
+            handleSolutionsTab().then(() =>
+              handleSubmissionsTab().then(() => {
+                toggleInit();
+                if (autoResetType === "code") {
+                  onClickResetCodeOnly();
+                } else if (autoResetType === "stopwatch") {
+                  onClickRestartStopwatch();
+                } else if (autoResetType === "timer") {
+                  onClickStartTimer();
+                } else if (autoResetType === "prompt") {
+                  const resetCodeOnlyButton = document.getElementById(
+                    "confirm-and-reset-code-button"
+                  );
+                  clockOption = "stopwatch";
+                  cancelButton.addEventListener("click", onClickCanceled);
+                  stopwatchButton.addEventListener(
+                    "click",
+                    onClickRestartStopwatch
+                  );
+                  timerButton.addEventListener("click", onClickStartTimer);
+                  resetCodeOnlyButton.addEventListener(
+                    "click",
+                    onClickResetCodeOnly
+                  );
+                }
+              })
             );
-            const stopwatchButton = document.getElementById(
-              "confirm-and-stopwatch-button"
-            );
-            const timerButton = document.getElementById(
-              "confirm-and-timer-button"
-            );
-            const resetCodeOnlyButton = document.getElementById(
-              "confirm-and-reset-code-button"
-            );
-            clockOption = "stopwatch";
-            cancelButton.addEventListener("click", onClickCanceled);
-            stopwatchButton.addEventListener("click", onClickRestartStopwatch);
-            timerButton.addEventListener("click", onClickStartTimer);
-            resetCodeOnlyButton.addEventListener("click", onClickResetCodeOnly);
-            selectedTabElements.forEach(simulateMouseClick);
-          }
+          });
         });
       });
     });
