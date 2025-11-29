@@ -413,39 +413,43 @@ const main = () => {
       waitForElm(dPathSelectors.codeReset).then((resetButtonSVG) => {
         getNthParent(resetButtonSVG, 3).click();
         waitForElm(dPathSelectors.resetInformationIcon).then((el) => {
-          const backdrop = document.getElementsByClassName(
-            "fixed inset-0 bg-black/70 opacity-100"
-          )[0];
-          editResetCodePopup(backdrop).then(() => {
-            handleSolutionsTab().then(() =>
-              handleSubmissionsTab().then(() => {
-                toggleInit();
-                if (autoResetType === "code") {
-                  onClickResetCodeOnly();
-                } else if (autoResetType === "stopwatch") {
-                  onClickRestartStopwatch();
-                } else if (autoResetType === "timer") {
-                  onClickStartTimer();
-                } else if (autoResetType === "prompt") {
-                  const resetCodeOnlyButton = document.getElementById(
-                    "confirm-and-reset-code-button"
-                  );
-                  clockOption = "stopwatch";
-                  cancelButton.addEventListener("click", onClickCanceled);
-                  stopwatchButton.addEventListener(
-                    "click",
-                    onClickRestartStopwatch
-                  );
-                  timerButton.addEventListener("click", onClickStartTimer);
-                  resetCodeOnlyButton.addEventListener(
-                    "click",
-                    onClickResetCodeOnly
-                  );
-                  handleAttachSubmitButtonListener();
-                  observeRunAndSubmit();
-                }
-              })
-            );
+          Promise.any(
+            Object.values(difficultyChipClasses).map((e) => waitForElm("." + e))
+          ).then(() => {
+            const backdrop = document.getElementsByClassName(
+              "fixed inset-0 bg-black/70 opacity-100"
+            )[0];
+            editResetCodePopup(backdrop).then(() => {
+              handleSolutionsTab().then(() =>
+                handleSubmissionsTab().then(() => {
+                  toggleInit();
+                  if (autoResetType === "code") {
+                    onClickResetCodeOnly();
+                  } else if (autoResetType === "stopwatch") {
+                    onClickRestartStopwatch();
+                  } else if (autoResetType === "timer") {
+                    onClickStartTimer();
+                  } else if (autoResetType === "prompt") {
+                    const resetCodeOnlyButton = document.getElementById(
+                      "confirm-and-reset-code-button"
+                    );
+                    clockOption = "stopwatch";
+                    cancelButton.addEventListener("click", onClickCanceled);
+                    stopwatchButton.addEventListener(
+                      "click",
+                      onClickRestartStopwatch
+                    );
+                    timerButton.addEventListener("click", onClickStartTimer);
+                    resetCodeOnlyButton.addEventListener(
+                      "click",
+                      onClickResetCodeOnly
+                    );
+                    handleAttachSubmitButtonListener();
+                    observeRunAndSubmit();
+                  }
+                })
+              );
+            });
           });
         });
       });
