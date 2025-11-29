@@ -376,6 +376,35 @@ const main = () => {
       });
     });
 
+  const onClickSubmit = () => {
+    console.log("submitted");
+  };
+
+  const handleAttachSubmitButtonListener = () => {
+    waitForElm(submitButtonSelector).then((button) => {
+      button.addEventListener("click", onClickSubmit);
+    });
+  };
+
+  const observeRunAndSubmit = () => {
+    const observer = new MutationObserver((mutations) => {
+      let foundSubmit = false;
+      mutations.forEach((mutation) => {
+        if (!foundSubmit && mutation.target.textContent.includes("Submit")) {
+          handleAttachSubmitButtonListener();
+          foundSubmit = true;
+        }
+      });
+    });
+    observer.observe(
+      getNthParent(document.querySelector(submitButtonSelector), 6),
+      {
+        childList: true,
+        subtree: true,
+      }
+    );
+  };
+
   toggleInit();
   waitForElm(dPathSelectors.description).then((descriptionPath) => {
     descriptionButton = getNthParent(descriptionPath, 4);
@@ -412,6 +441,8 @@ const main = () => {
                     "click",
                     onClickResetCodeOnly
                   );
+                  handleAttachSubmitButtonListener();
+                  observeRunAndSubmit();
                 }
               })
             );
